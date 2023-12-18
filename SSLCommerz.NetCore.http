@@ -1,0 +1,6 @@
+@SSLCommerz.NetCore_HostAddress = http://localhost:5036
+
+GET {{SSLCommerz.NetCore_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
