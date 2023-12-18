@@ -1,5 +1,8 @@
 using SSLCommerz.NetCore.OptionsSetup;
 using SSLCommerz.NetCore.SSLCommerz;
+using Polly.Extensions.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Polly;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,12 +19,21 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.ConfigureOptions<SSLCommerzOptionsSetup>();
 
-builder.Services.AddHttpClient();
+builder.Services.AddHttpClient("GwProcessInit")
+    .AddTransientHttpErrorPolicy(builder =>
+        builder.WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
+    .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(30));
+
+builder.Services.AddHttpClient("TranxValidation")
+    .AddTransientHttpErrorPolicy(builder =>
+        builder.WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))
+    .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(30));
 
 builder.Services.AddScoped<ISSLCommerzService, SSLCommerzService>();
 

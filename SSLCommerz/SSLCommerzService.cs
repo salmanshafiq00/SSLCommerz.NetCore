@@ -41,7 +41,7 @@ public class SSLCommerzService : ISSLCommerzService
 
             var content = new FormUrlEncodedContent(postData);
 
-            var client = _httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient("GwProcessInit");
 
             var response = await client.PostAsync(submitUrl, content, cancellationToken);
 
@@ -91,7 +91,7 @@ public class SSLCommerzService : ISSLCommerzService
 
         string validateUrl = $"{baseUrl}{_sslCommerz.ValidationUrl}?val_id={encodedValID}&store_id={encodedStoreID}&store_passwd={encodedStorePassword}&v=1&format=json";
 
-        var client = _httpClientFactory.CreateClient();
+        var client = _httpClientFactory.CreateClient("TranxValidation");
 
         var response = await client.GetAsync(validateUrl, cancellationToken);
 
