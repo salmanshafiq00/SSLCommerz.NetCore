@@ -6,37 +6,41 @@ namespace SSLCommerz.NetCore.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class PaymentController : ControllerBase
+    public class PaymentController(ISSLCommerzService sSLCommerzService) : ControllerBase
     {
-        private readonly ISSLCommerzService _sSLCommerzService;
+        private readonly ISSLCommerzService _sSLCommerzService = sSLCommerzService;
 
-        public PaymentController(ISSLCommerzService sSLCommerzService)
-        {
-            _sSLCommerzService = sSLCommerzService;
-        }
         [HttpPost]
-        public async Task<ActionResult> Checkout(Guid packageId)
+        public async Task<ActionResult> Checkout(Guid productId)
         {
-            //Todo: Get Package Information from DB using CQRS
+            //Todo: Get Product Information from DB using CQRS/Repository
+            // Here is used a private method for simplicity.
 
-            SSLInitialRequest reqData = GetPaymentData(packageId);
+            SSLInitialRequest reqData = GetPaymentData(productId);
 
-            // payment initialize
-            string response = await _sSLCommerzService.InitializeTransectionAsync(reqData, new CancellationToken());
+            // payment initialize. It will return gateway return url.
+            string response = await _sSLCommerzService
+                .InitializeTransectionAsync(reqData, new CancellationToken());
 
             //Todo Here we can save invoice with payment status false. after success payment we will do it true;
-
-            return Ok(response);    //returnre Gateway api
+            // return Redirect(response);    // if mvc application.
+            return Ok(response);    //return Gateway api
         }
 
         [EnableCors("SSLCommerzOrigins")]
         [HttpPost]
         public async Task<ActionResult> CheckoutSuccess()
         {
-            var allowedOrigins = new HashSet<string>() { "https://securepay.sslcommerz.com", "https://sandbox.sslcommerz.com" };
+            var allowedOrigins = new HashSet<string>()
+            {
+                "https://securepay.sslcommerz.com",
+                "https://sandbox.sslcommerz.com"
+            };
 
             // Check if the request has an "Origin" header
-            if (Request.Headers.TryGetValue("Origin", out var origin) && !allowedOrigins.Contains(origin))
+            if (
+                Request.Headers.TryGetValue("Origin", out var origin) 
+                && !allowedOrigins.Contains(origin))
             {
                 return StatusCode(403, "Forbidden: Invalid Origin");
             }
@@ -50,33 +54,38 @@ namespace SSLCommerz.NetCore.Controllers
 
             // Cross Check here with post data and with ur saved invoice data
 
-            // Get invoice data from DB using tranxId
+            // Get invoice data from DB by tranxId
             decimal amount = 55000;
             string currency = "BDT";
 
-            var resonse = await _sSLCommerzService.ValidatePaymentAsync(tranxId, amount, currency, Request, new CancellationToken());
-            if (resonse.status)
+            var (status, message) = await _sSLCommerzService
+                .ValidatePaymentAsync(tranxId, amount, currency, Request, new CancellationToken());
+            
+            if (status)
             {
                 //Todo: if respose is true then update invoice payment status true
             }
-            var successInfo = $"Validation Response: {resonse.status}";
+
+            var successInfo = $"Validation Response: {status}\n Your TranxID: {tranxId}";
 
             return Ok(successInfo);
 
-            //return Redirect("http://localhost:4200/payment/success/${TrxID}"); // it should to payment success component
+            // use it for ur web api application to direct to success page. 
+            //return Redirect($"http://localhost:4200/payment/success/{tranxId}"); 
         }
 
         [EnableCors("SSLCommerzOrigins")]
         [HttpPost]
         public IActionResult CheckoutFail()
         {
-            string tranxID = Request.Form["tran_id"].ToString();
+            string tranxId = Request.Form["tran_id"].ToString();
 
             // Todo: if transection fail then we will delete the invoice or keep false of payment status.
 
             return BadRequest("There some error while processing your payment. Please try again.");
 
-            //return Redirect("http://localhost:4200/payment/fail/${TrxID}"); // it should to payment success component
+            // use it for ur web api application to direct to fail page. 
+            //return Redirect($"http://localhost:4200/payment/fail/{tranxId}"); 
         }
 
         [EnableCors("SSLCommerzOrigins")]
@@ -86,11 +95,19 @@ namespace SSLCommerz.NetCore.Controllers
             string tranxID = Request.Form["tran_id"].ToString();
 
             return BadRequest("Your payment has been cancel");
+
+            // use it for ur web api application to direct to fail page. 
+            //return Redirect($"http://localhost:4200/payment/cancel/{tranxId}"); 
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<SSLTransactionQueryResponse>> TransactionDetail(string tranxId)
+        {
+            return await _sSLCommerzService.GetTransactionDetail(tranxId, new CancellationToken());
         }
 
         private static SSLInitialRequest GetPaymentData(Guid packageId)
         {
-            var businessProfileId = Guid.NewGuid().ToString();
             var userId = Guid.NewGuid().ToString();
             var transectionId = Guid.NewGuid().ToString();
             var userName = "TestUser";

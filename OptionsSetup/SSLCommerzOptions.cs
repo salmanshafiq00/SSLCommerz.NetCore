@@ -14,5 +14,7 @@ public class SSLCommerzOptions
     public required string SuccessUrl { get; set; }
     public required string FailUrl { get; set; }
     public required string CancelUrl { get; set; }
+    public required string AppLiveBaseUrl { get; set; }
+    public required string AppTestBaseUrl { get; set; }
     public string IPNUrl { get; set; }
 }
