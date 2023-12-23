@@ -66,7 +66,7 @@ namespace SSLCommerz.NetCore.Controllers
                 //Todo: if respose is true then update invoice payment status true
             }
 
-            var successInfo = $"Validation Response: {status}\n Your TranxID: {tranxId}";
+            var successInfo = $"Validation Response: {status}\nYour TranxID: {tranxId}";
 
             return Ok(successInfo);
 

@@ -10,7 +10,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("SSLCommerzOrigins", builder =>
     {
-        builder.WithOrigins("https://securepay.sslcommerzz.com", "https://sandboxe.sslcommerzz.com")
+        builder.WithOrigins("https://securepay.sslcommerz.com", "https://sandbox.sslcommerz.com")
                .AllowAnyMethod()
                .AllowAnyHeader();
     });
