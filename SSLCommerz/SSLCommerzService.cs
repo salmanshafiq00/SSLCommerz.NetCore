@@ -231,7 +231,7 @@ public class SSLCommerzService(IOptionsSnapshot<SSLCommerzOptions> sslCommerz, I
         return false;
     }
 
-    private Dictionary<string, string?> GetKeyValuePairs(object obj)
+    private static Dictionary<string, string?> GetKeyValuePairs(object obj)
     {
         return obj
          .GetType()

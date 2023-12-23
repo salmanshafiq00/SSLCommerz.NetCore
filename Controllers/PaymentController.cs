@@ -100,6 +100,20 @@ namespace SSLCommerz.NetCore.Controllers
             //return Redirect($"http://localhost:4200/payment/cancel/{tranxId}"); 
         }
 
+        [EnableCors("SSLCommerzOrigins")]
+        [HttpPost]
+        public IActionResult CheckoutIPN()
+        {
+            var req = Request.Form;
+
+            string tranxID = Request.Form["tran_id"].ToString();
+
+            return BadRequest("Your payment has been cancel");
+
+            // use it for ur web api application to direct to fail page. 
+            //return Redirect($"http://localhost:4200/payment/cancel/{tranxId}"); 
+        }
+
         [HttpGet]
         public async Task<ActionResult<SSLTransactionQueryResponse>> TransactionDetail(string tranxId)
         {
