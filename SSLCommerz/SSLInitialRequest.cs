@@ -19,7 +19,7 @@ public class SSLInitialRequest
         string currency = "BDT",
         string shippingMethod = "NO")
     {
-        TranId = tranxId;
+        TranxId = tranxId;
         CusName = cusName;
         CusPhone = cusPhone;
         CusEmail = cusEmail;
@@ -36,7 +36,7 @@ public class SSLInitialRequest
     }
     // System Information
     [JsonProperty("tran_id")]
-    public string TranId { get; set; }
+    public string TranxId { get; set; }
     [JsonProperty("total_amount")]
     public decimal TotalAmount { get; set; }
     [JsonProperty("currency")]
@@ -86,7 +86,7 @@ public class SSLInitialRequest
     [JsonProperty("shipping_method")]
     public string ShippingMethod { get; set; }
     [JsonProperty("num_of_item")]
-    public string NumOfItem { get; set; }
+    public int NumOfItem { get; set; }
     [JsonProperty("weight_of_items")]
     public string WeightOfItems { get; set; }
     [JsonProperty("logistic_pickup_id")]
