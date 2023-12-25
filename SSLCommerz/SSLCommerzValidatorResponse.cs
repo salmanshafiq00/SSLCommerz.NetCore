@@ -12,7 +12,7 @@ public class SSLCommerzValidatorResponse : SSLCommonResponse
     public int EMIInstalment { get; set; }
 
     [JsonProperty("emi_amount")]
-    public decimal EMIAmount { get; set; }
+    public decimal? EMIAmount { get; set; }
 
     [JsonProperty("emi_description")]
     public string EMIDescription { get; set; }

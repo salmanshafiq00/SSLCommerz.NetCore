@@ -33,8 +33,6 @@ namespace SSLCommerz.NetCore.Controllers
         [HttpPost]
         public async Task<ActionResult> CheckoutSuccess([FromForm][ModelBinder(typeof(SnakeCaseModelBinder))] SSLCallbackResponse callBackResponse)
         {
-            var jsonData = GetJsonCollection(Request.Form);
-
             var allowedOrigins = new HashSet<string>()
             {
                 "https://securepay.sslcommerz.com",
@@ -54,34 +52,34 @@ namespace SSLCommerz.NetCore.Controllers
                 return BadRequest("There some error while processing your payment. Please try again.");
             }
 
-            string tranxId = Request.Form["tran_id"].ToString();
-
             // Cross Check here with post data and with ur saved invoice data
 
-            // Get invoice data from DB by tranxId
+            // Get invoice data from DB by tranxId. if data not found then return BadRequest()
             decimal amount = 55000;
             string currency = "BDT";
 
             var (status, message) = await _sSLCommerzService
-                .ValidatePaymentAsync(tranxId, amount, currency, callBackResponse, new CancellationToken());
+                .ValidatePaymentAsync(callBackResponse.TranxId, amount, currency, callBackResponse, new CancellationToken());
             
             if (status)
             {
                 //Todo: if respose is true then update invoice payment status true
             }
 
-            var successInfo = $"Validation Response: {status}\nYour TranxID: {tranxId}";
+            var successInfo = $"Validation Response: {status}\nYour TranxID: {callBackResponse.TranxId}";
 
             return Ok(successInfo);
 
             // use it for ur web api application to direct to success page. 
-            //return Redirect($"http://localhost:4200/payment/success/{tranxId}"); 
+            //return Redirect($"http://localhost:4200/payment/success/{callBackResponse.TranxId}"); 
         }
 
         [EnableCors("SSLCommerzOrigins")]
         [HttpPost]
-        public IActionResult CheckoutFail()
+        public IActionResult CheckoutFail([FromForm][ModelBinder(typeof(SnakeCaseModelBinder))] SSLCallbackResponse callBackResponse)
         {
+            var jsonData = GetJsonCollection(Request.Form);
+
             string tranxId = Request.Form["tran_id"].ToString();
 
             // Todo: if transection fail then we will delete the invoice or keep false of payment status.

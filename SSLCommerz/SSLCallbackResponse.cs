@@ -11,7 +11,7 @@ public class SSLCallbackResponse
     public string TranxId { get; set; }
 
     [JsonProperty("val_id")]
-    public string ValidationId { get; set; }
+    public string? ValidationId { get; set; }
 
     [JsonProperty("amount")]
     public decimal Amount { get; set; }
@@ -78,7 +78,7 @@ public class SSLCallbackResponse
     public decimal? CurrencyRate { get; set; }
 
     [JsonProperty("base_fair")]
-    public decimal BaseFair { get; set; }
+    public decimal? BaseFair { get; set; }
 
     [JsonProperty("value_a")]
     public string ValueA { get; set; }
@@ -99,6 +99,6 @@ public class SSLCallbackResponse
     public int RiskLevel { get; set; }
 
     [JsonProperty("risk_title")]
-    public string RiskTitle { get; set; }
+    public string? RiskTitle { get; set; }
 }
 

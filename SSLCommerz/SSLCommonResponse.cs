@@ -52,13 +52,13 @@ public abstract class SSLCommonResponse
     public string CurrencyType { get; set; }
 
     [JsonProperty("currency_amount")]
-    public decimal CurrencyAmount { get; set; }
+    public decimal? CurrencyAmount { get; set; }
 
     [JsonProperty("currency_rate")]
-    public decimal CurrencyRate { get; set; }
+    public decimal? CurrencyRate { get; set; }
 
     [JsonProperty("base_fair")]
-    public decimal BaseFair { get; set; }
+    public decimal? BaseFair { get; set; }
 
     [JsonProperty("value_a")]
     public string ValueA { get; set; }
@@ -75,13 +75,13 @@ public abstract class SSLCommonResponse
     public string RiskTitle { get; set; }
 
     [JsonProperty("risk_level")]
-    public int RiskLevel { get; set; }
+    public int? RiskLevel { get; set; }
 
     [JsonProperty("discount_percentage")]
-    public decimal DiscountPercentage { get; set; }
+    public decimal? DiscountPercentage { get; set; }
 
     [JsonProperty("discount_amount")]
-    public decimal DiscountAmount { get; set; }
+    public decimal? DiscountAmount { get; set; }
 
     [JsonProperty("discount_remarks")]
     public string DiscountRemarks { get; set; }

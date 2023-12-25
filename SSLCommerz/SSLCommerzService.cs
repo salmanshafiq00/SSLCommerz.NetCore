@@ -109,7 +109,7 @@ public class SSLCommerzService(IOptionsSnapshot<SSLCommerzOptions> sslCommerz, I
         var validatorResponse = JsonConvert
             .DeserializeObject<SSLCommerzValidatorResponse>(responseContent);
 
-        if (validatorResponse is null || !GetValidationStatus(validatorResponse.Status))
+        if (validatorResponse is null || !IsValid(validatorResponse.Status))
         {
             return (false, "This transaction is either expired or fails");
         }
@@ -214,7 +214,7 @@ public class SSLCommerzService(IOptionsSnapshot<SSLCommerzOptions> sslCommerz, I
         ? _sslCommerz.SSLCommerzLiveUrl
         : _sslCommerz.SSLCommerzTestUrl;
 
-    private static bool GetValidationStatus(string status)
+    private static bool IsValid(string status)
         => status == "VALID" || status == "VALIDATED";
 
     private static bool IsTranxIdAndAmountValid(SSLCommerzValidatorResponse validatorResponse
