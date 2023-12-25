@@ -18,25 +18,25 @@ public class SSLTransactionQueryResponse
 public class SSLCommerzTransactionElement
 {
     [JsonProperty("val_id")]
-    public string ValId { get; set; }
+    public string ValidationId { get; set; }
 
     [JsonProperty("status")]
     public string Status { get; set; }
 
     [JsonProperty("validated_on")]
-    public DateTime ValidatedOn { get; set; }
+    public DateTime? ValidatedOn { get; set; }
 
     [JsonProperty("currency_type")]
     public string CurrencyType { get; set; }
 
     [JsonProperty("currency_amount")]
-    public decimal? CurrencyAmount { get; set; }
+    public decimal CurrencyAmount { get; set; }
 
     [JsonProperty("currency_rate")]
-    public decimal? CurrencyRate { get; set; }
+    public decimal CurrencyRate { get; set; }
 
     [JsonProperty("base_fair")]
-    public decimal? BaseFair { get; set; }
+    public decimal BaseFair { get; set; }
 
     [JsonProperty("value_a")]
     public string ValueA { get; set; }
@@ -60,19 +60,19 @@ public class SSLCommerzTransactionElement
     public decimal? DiscountAmount { get; set; }
 
     [JsonProperty("tran_date")]
-    public DateTime TranDate { get; set; }
+    public DateTime? TranxDate { get; set; }
 
     [JsonProperty("tran_id")]
-    public Guid TranId { get; set; }
+    public string TranxId { get; set; }
 
     [JsonProperty("amount")]
-    public decimal? Amount { get; set; }
+    public decimal Amount { get; set; }
 
     [JsonProperty("store_amount")]
-    public decimal? StoreAmount { get; set; }
+    public decimal StoreAmount { get; set; }
 
     [JsonProperty("bank_tran_id")]
-    public string BankTransactionId { get; set; }
+    public string BankTranxId { get; set; }
 
     [JsonProperty("card_type")]
     public string CardType { get; set; }
@@ -81,7 +81,7 @@ public class SSLCommerzTransactionElement
     public string RiskTitle { get; set; }
 
     [JsonProperty("risk_level")]
-    public int? RiskLevel { get; set; }
+    public int RiskLevel { get; set; }
 
     [JsonProperty("currency")]
     public string Currency { get; set; }
@@ -108,7 +108,7 @@ public class SSLCommerzTransactionElement
     public string GatewayVersion { get; set; }
 
     [JsonProperty("emi_instalment")]
-    public int? EmiInstalment { get; set; }
+    public int EmiInstalment { get; set; }
 
     [JsonProperty("emi_amount")]
     public decimal? EmiAmount { get; set; }
