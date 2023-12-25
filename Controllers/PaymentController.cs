@@ -123,7 +123,7 @@ namespace SSLCommerz.NetCore.Controllers
         private static SSLInitialRequest GetPaymentData(Guid packageId)
         {
             var userId = Guid.NewGuid().ToString();
-            var transectionId = Guid.NewGuid().ToString();
+            var transectionId = packageId.ToString();
             var userName = "TestUser";
             var emailAddress = "sample@localhost.com";
             var cusAddress = "Dhaka";

@@ -223,7 +223,7 @@ public class SSLCommerzService(IOptionsSnapshot<SSLCommerzOptions> sslCommerz, I
         , string tranxCurrency)
     {
         if (validatorResponse.Currency.Equals(tranxCurrency, StringComparison.OrdinalIgnoreCase)
-            && tranxId == validatorResponse.TransactionId
+            && tranxId == validatorResponse.TranxId
             && (tranxAmount - validatorResponse.Amount < 1))
         {
             return true;

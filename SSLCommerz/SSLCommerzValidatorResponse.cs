@@ -8,10 +8,10 @@ public class SSLCommerzValidatorResponse
     public string Status { get; set; }
 
     [JsonProperty("tran_date")]
-    public string TransactionDate { get; set; }
+    public string TranxDate { get; set; }
 
     [JsonProperty("tran_id")]
-    public string TransactionId { get; set; }
+    public string TranxId { get; set; }
 
     [JsonProperty("val_id")]
     public string ValidationId { get; set; }
@@ -26,7 +26,7 @@ public class SSLCommerzValidatorResponse
     public string Currency { get; set; }
 
     [JsonProperty("bank_tran_id")]
-    public string BankTransactionId { get; set; }
+    public string BankTranxId { get; set; }
 
     [JsonProperty("card_type")]
     public string CardType { get; set; }
@@ -56,13 +56,13 @@ public class SSLCommerzValidatorResponse
     public string CurrencyType { get; set; }
 
     [JsonProperty("currency_amount")]
-    public decimal? CurrencyAmount { get; set; }
+    public decimal CurrencyAmount { get; set; }
 
     [JsonProperty("currency_rate")]
-    public decimal? CurrencyRate { get; set; }
+    public decimal CurrencyRate { get; set; }
 
     [JsonProperty("base_fair")]
-    public string BaseFair { get; set; }
+    public decimal BaseFair { get; set; }
 
     [JsonProperty("value_a")]
     public string ValueA { get; set; }
@@ -77,10 +77,10 @@ public class SSLCommerzValidatorResponse
     public string ValueD { get; set; }
 
     [JsonProperty("emi_instalment")]
-    public string EMIInstalment { get; set; }
+    public int EMIInstalment { get; set; }
 
     [JsonProperty("emi_amount")]
-    public string EMIAmount { get; set; }
+    public decimal EMIAmount { get; set; }
 
     [JsonProperty("emi_description")]
     public string EMIDescription { get; set; }
@@ -95,13 +95,13 @@ public class SSLCommerzValidatorResponse
     public string RiskTitle { get; set; }
 
     [JsonProperty("risk_level")]
-    public string RiskLevel { get; set; }
+    public int RiskLevel { get; set; }
 
     [JsonProperty("discount_percentage")]
-    public string DiscountPercentage { get; set; }
+    public decimal DiscountPercentage { get; set; }
 
     [JsonProperty("discount_amount")]
-    public string DiscountAmount { get; set; }
+    public decimal DiscountAmount { get; set; }
 
     [JsonProperty("discount_remarks")]
     public string DiscountRemarks { get; set; }
@@ -110,28 +110,20 @@ public class SSLCommerzValidatorResponse
     public string APIConnect { get; set; }
 
     [JsonProperty("validated_on")]
-    public string ValidatedOn { get; set; }
+    public DateTime ValidatedOn { get; set; }
 
     [JsonProperty("gw_version")]
     public string GatewayVersion { get; set; }
 
     [JsonProperty("offer_avail")]
-    public int? OfferAvailable { get; set; }
+    public int OfferAvailable { get; set; }
 
     [JsonProperty("card_ref_id")]
     public string CardReferenceId { get; set; }
 
     [JsonProperty("isTokeizeSuccess")]
-    public int? IsTokenizeSuccess { get; set; }
+    public int IsTokenizeSuccess { get; set; }
 
     [JsonProperty("campaign_code")]
     public string CampaignCode { get; set; }
-    [JsonProperty("token_key")]
-    public string TokenKey { get; set; }
-
-    [JsonProperty("shipping_method")]
-    public string ShippingMethod { get; set; }
-
-    [JsonProperty("num_of_item")]
-    public string NumberOfItems { get; set; }
 }
