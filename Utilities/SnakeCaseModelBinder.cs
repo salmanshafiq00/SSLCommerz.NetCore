@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
-using SSLCommerz.NetCore.SSLCommerz;
+using Newtonsoft.Json.Converters;
 
 namespace SSLCommerz.NetCore.Utilities;
 
@@ -19,13 +19,25 @@ public class SnakeCaseModelBinder : IModelBinder
         var formData = formCollection
             .ToDictionary(k => k.Key, v => v.Value.ToString());
 
-        // Serialize to JSON using Newtonsoft.Json
-        var jsonString = JsonConvert.SerializeObject(formData);
-
         // Get the target type from the action's parameter
         var targetType = bindingContext.ModelType;
 
-        bindingContext.Result = ModelBindingResult.Success(JsonConvert.DeserializeObject(jsonString, targetType));
+        try
+        {
+            // Serialize to JSON using Newtonsoft.Json with custom settings
+            var jsonString = JsonConvert.SerializeObject(formData);
+
+            // Deserialize to the target type
+            var result = JsonConvert.DeserializeObject(jsonString, targetType);
+
+            // Set the result in the binding context
+            bindingContext.Result = ModelBindingResult.Success(result);
+        }
+        catch (Exception ex)
+        {
+            // Handle any exception during binding
+            bindingContext.ModelState.AddModelError(bindingContext.ModelName, ex.Message);
+        }
 
         return Task.CompletedTask;
     }

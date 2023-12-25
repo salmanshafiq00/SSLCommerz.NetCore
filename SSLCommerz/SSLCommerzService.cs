@@ -78,17 +78,16 @@ public class SSLCommerzService(IOptionsSnapshot<SSLCommerzOptions> sslCommerz, I
           string tranxId
         , decimal tranxAmount
         , string tranxCurrency
-        , HttpRequest httpRequest
+        , SSLCallbackResponse callbackResponse
         , CancellationToken cancellationToken)
     {
-        bool hashVerified = VerifyIPNHash(httpRequest);
-
+        bool hashVerified = VerifyIPNHash(callbackResponse);
         if (!hashVerified)
         {
             return (false, "Unable to verify hash");
         }
 
-        string encodedValID = WebUtility.UrlEncode(httpRequest.Form[VAL_ID]);
+        string encodedValID = WebUtility.UrlEncode(callbackResponse.ValidationId);
         string encodedStoreID = WebUtility.UrlEncode(_sslCommerz.StoreId);
         string encodedStorePassword = WebUtility.UrlEncode(_sslCommerz.StorePass);
 
@@ -154,10 +153,11 @@ public class SSLCommerzService(IOptionsSnapshot<SSLCommerzOptions> sslCommerz, I
         return transectionDetail;
     }
 
-    private bool VerifyIPNHash(HttpRequest httpRequest)
+
+    private bool VerifyIPNHash(SSLCallbackResponse callbackResponse)
     {
-        var verifySign = httpRequest.Form[VERIFY_SIGN].ToString();
-        var verifyKey = httpRequest.Form[VERIFY_KEY].ToString();
+        var verifySign = callbackResponse.VerifySign;
+        var verifyKey = callbackResponse.VerifyKey;
 
         // Check For verify_sign and verify_key parameters
         if (!string.IsNullOrEmpty(verifySign) && !string.IsNullOrEmpty(verifyKey))
@@ -168,7 +168,7 @@ public class SSLCommerzService(IOptionsSnapshot<SSLCommerzOptions> sslCommerz, I
 
             // Initiate a key value pair list array
             var dataArray = keyList
-                .Select(key => new KeyValuePair<string, string>(key, httpRequest.Form[key].ToString()))
+                .Select(key => new KeyValuePair<string, string>(key, GetPropertyValue(callbackResponse, key)))
                 .ToList();
 
             // Store Hashed Password in list
@@ -241,6 +241,22 @@ public class SSLCommerzService(IOptionsSnapshot<SSLCommerzOptions> sslCommerz, I
              prop => ((JsonPropertyAttribute)Attribute.GetCustomAttribute(prop, typeof(JsonPropertyAttribute)))?.PropertyName ?? prop.Name,
              prop => prop.GetValue(obj)?.ToString()
          );
+    }
+
+    private static string GetPropertyValue(object obj, string propertyName)
+    {
+        var propertyInfo = obj.GetType().GetProperties()
+            .FirstOrDefault(p => p.GetCustomAttributes(true)
+                .OfType<JsonPropertyAttribute>()
+                .Any(attr => attr.PropertyName == propertyName));
+
+        if (propertyInfo != null)
+        {
+            // Get the value of the property
+            var propertyValue = propertyInfo.GetValue(obj);
+            return propertyValue?.ToString() ?? string.Empty;
+        }
+        return string.Empty;
     }
 }
 

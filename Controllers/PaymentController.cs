@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using SSLCommerz.NetCore.SSLCommerz;
+using SSLCommerz.NetCore.Utilities;
 
 namespace SSLCommerz.NetCore.Controllers
 {
@@ -29,8 +31,10 @@ namespace SSLCommerz.NetCore.Controllers
 
         [EnableCors("SSLCommerzOrigins")]
         [HttpPost]
-        public async Task<ActionResult> CheckoutSuccess()
+        public async Task<ActionResult> CheckoutSuccess([FromForm][ModelBinder(typeof(SnakeCaseModelBinder))] SSLCallbackResponse callBackResponse)
         {
+            var jsonData = GetJsonCollection(Request.Form);
+
             var allowedOrigins = new HashSet<string>()
             {
                 "https://securepay.sslcommerz.com",
@@ -59,7 +63,7 @@ namespace SSLCommerz.NetCore.Controllers
             string currency = "BDT";
 
             var (status, message) = await _sSLCommerzService
-                .ValidatePaymentAsync(tranxId, amount, currency, Request, new CancellationToken());
+                .ValidatePaymentAsync(tranxId, amount, currency, callBackResponse, new CancellationToken());
             
             if (status)
             {
@@ -149,6 +153,19 @@ namespace SSLCommerz.NetCore.Controllers
                 productProfile);
 
             return initRequestInfo;
+        }
+        private static string GetJsonCollection(IFormCollection formCollection)
+        {
+            // Extract form data
+            var formData = formCollection
+                .ToDictionary(k => k.Key, v => v.Value.ToString());
+
+            // Serialize to JSON using Newtonsoft.Json
+            var jsonString = JsonConvert.SerializeObject(formData);
+
+            // Your logic here
+
+            return jsonString;
         }
     }
 }

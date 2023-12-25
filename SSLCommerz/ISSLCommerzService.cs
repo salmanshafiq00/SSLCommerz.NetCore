@@ -16,10 +16,9 @@ public interface ISSLCommerzService
     /// <param name="tranxId"></param>
     /// <param name="tranxAmount"></param>
     /// <param name="tranxCurrency"></param>
-    /// <param name="httpRequest"></param>
     /// <param name="cancellationToken"></param>
     /// <returns> tuple -> (bool status, string? message)</returns>
-    Task<(bool status, string? message)> ValidatePaymentAsync(string tranxId, decimal tranxAmount, string tranxCurrency, HttpRequest httpRequest, CancellationToken cancellationToken);
+    Task<(bool status, string? message)> ValidatePaymentAsync(string tranxId, decimal tranxAmount, string tranxCurrency, SSLCallbackResponse callbackResponse, CancellationToken cancellationToken);
 
     /// <summary>
     /// Get transaction detail by Transaction ID
