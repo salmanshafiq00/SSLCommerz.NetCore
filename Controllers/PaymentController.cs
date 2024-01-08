@@ -80,14 +80,12 @@ namespace SSLCommerz.NetCore.Controllers
         {
             var jsonData = GetJsonCollection(Request.Form);
 
-            string tranxId = Request.Form["tran_id"].ToString();
-
             // Todo: if transection fail then we will delete the invoice or keep false of payment status.
 
             return BadRequest("There some error while processing your payment. Please try again.");
 
             // use it for ur web api application to direct to fail page. 
-            //return Redirect($"http://localhost:4200/payment/fail/{tranxId}"); 
+            //return Redirect($"http://localhost:4200/payment/fail/{callBackResponse.TranxId}"); 
         }
 
         [EnableCors("SSLCommerzOrigins")]

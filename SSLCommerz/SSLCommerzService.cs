@@ -6,7 +6,10 @@ using System.Text;
 
 namespace SSLCommerz.NetCore.SSLCommerz;
 
-public class SSLCommerzService(IOptionsSnapshot<SSLCommerzOptions> sslCommerz, IHttpClientFactory httpClientFactory) : ISSLCommerzService
+public class SSLCommerzService(
+    IOptionsSnapshot<SSLCommerzOptions> sslCommerz, 
+    IHttpClientFactory httpClientFactory) 
+    : ISSLCommerzService
 {
     private readonly SSLCommerzOptions _sslCommerz = sslCommerz.Value;
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
@@ -29,16 +32,18 @@ public class SSLCommerzService(IOptionsSnapshot<SSLCommerzOptions> sslCommerz, I
         {
             var postData = GetKeyValuePairs(reqData);
 
+            var appBaseUrl = _sslCommerz.IsDevelopment ? _sslCommerz.AppDevBaseUrl : _sslCommerz.AppBaseUrl;
+
             postData.Add(STORE_ID, _sslCommerz.StoreId);
             postData.Add(STORE_PASSWD, _sslCommerz.StorePass);
-            postData.Add(SUCCESS_URL, $"{_sslCommerz.AppLiveBaseUrl}{_sslCommerz.SuccessUrl}");
-            postData.Add(FAIL_URL, $"{_sslCommerz.AppLiveBaseUrl}{_sslCommerz.FailUrl}");
-            postData.Add(CANCEL_URL, $"{_sslCommerz.AppLiveBaseUrl}{_sslCommerz.CancelUrl}");
-            postData.Add(IPN_URL, $"{_sslCommerz.AppLiveBaseUrl}{_sslCommerz.IPNUrl}");
+            postData.Add(SUCCESS_URL, $"{appBaseUrl}{_sslCommerz.SuccessUrl}");
+            postData.Add(FAIL_URL, $"{appBaseUrl}{_sslCommerz.FailUrl}");
+            postData.Add(CANCEL_URL, $"{appBaseUrl}{_sslCommerz.CancelUrl}");
+            postData.Add(IPN_URL, $"{appBaseUrl}{_sslCommerz.IPNUrl}");
 
-            var baseUrl = GetSSLCommerzUrl(_sslCommerz.IsLive);
+            var sslBaseUrl = GetSSLCommerzUrl(_sslCommerz.IsSandbox);
 
-            var submitUrl = baseUrl + _sslCommerz.SubmitUrl;
+            var submitUrl = sslBaseUrl + _sslCommerz.SubmitUrl;
 
             var content = new FormUrlEncodedContent(postData);
 
@@ -91,9 +96,9 @@ public class SSLCommerzService(IOptionsSnapshot<SSLCommerzOptions> sslCommerz, I
         string encodedStoreID = WebUtility.UrlEncode(_sslCommerz.StoreId);
         string encodedStorePassword = WebUtility.UrlEncode(_sslCommerz.StorePass);
 
-        string baseUrl = GetSSLCommerzUrl(_sslCommerz.IsLive);
+        var sslBaseUrl = GetSSLCommerzUrl(_sslCommerz.IsSandbox);
 
-        string validateUrl = $"{baseUrl}{_sslCommerz.ValidationUrl}?{VAL_ID}={encodedValID}&{STORE_ID}={encodedStoreID}&{STORE_PASSWD}={encodedStorePassword}&v=1&format=json";
+        string validateUrl = $"{sslBaseUrl}{_sslCommerz.ValidationUrl}?{VAL_ID}={encodedValID}&{STORE_ID}={encodedStoreID}&{STORE_PASSWD}={encodedStorePassword}&v=1&format=json";
 
         var client = _httpClientFactory.CreateClient("SSLCommerz");
 
@@ -109,7 +114,7 @@ public class SSLCommerzService(IOptionsSnapshot<SSLCommerzOptions> sslCommerz, I
         var validatorResponse = JsonConvert
             .DeserializeObject<SSLCommerzValidatorResponse>(responseContent);
 
-        if (validatorResponse is null || !IsValid(validatorResponse.Status))
+        if (validatorResponse is not {Status: "VALID" or "VALIDATED" })
         {
             return (false, "This transaction is either expired or fails");
         }
@@ -122,15 +127,17 @@ public class SSLCommerzService(IOptionsSnapshot<SSLCommerzOptions> sslCommerz, I
     }
 
 
-    public async Task<SSLTransactionQueryResponse> GetTransactionDetail(string tranxId, CancellationToken cancellationToken)
+    public async Task<SSLTransactionQueryResponse> GetTransactionDetail(
+        string tranxId, 
+        CancellationToken cancellationToken)
     {
-        var baseUrl = GetSSLCommerzUrl(_sslCommerz.IsLive);
+        var sslBaseUrl = GetSSLCommerzUrl(_sslCommerz.IsSandbox);
 
         string encodedTranxID = WebUtility.UrlEncode(tranxId);
         string encodedStoreID = WebUtility.UrlEncode(_sslCommerz.StoreId);
         string encodedStorePassword = WebUtility.UrlEncode(_sslCommerz.StorePass);
 
-        var checkingUrl = $"{baseUrl}{_sslCommerz.CheckingUrl}?{TRANX_ID}={encodedTranxID}&{STORE_ID}={encodedStoreID}&{STORE_PASSWD}={encodedStorePassword}&v=1&format=json";
+        var checkingUrl = $"{sslBaseUrl}{_sslCommerz.CheckingUrl}?{TRANX_ID}={encodedTranxID}&{STORE_ID}={encodedStoreID}&{STORE_PASSWD}={encodedStorePassword}&v=1&format=json";
 
         // var content = new FormUrlEncodedContent(requestData);
 
@@ -209,13 +216,10 @@ public class SSLCommerzService(IOptionsSnapshot<SSLCommerzOptions> sslCommerz, I
             .ToLower();
     }
 
-    private string GetSSLCommerzUrl(bool isLive)
-        => isLive
-        ? _sslCommerz.SSLCommerzLiveUrl
-        : _sslCommerz.SSLCommerzTestUrl;
-
-    private static bool IsValid(string status)
-        => status == "VALID" || status == "VALIDATED";
+    private string GetSSLCommerzUrl(bool isSandbox)
+        => isSandbox
+        ? _sslCommerz.SSLCommerzTestUrl
+        : _sslCommerz.SSLCommerzUrl;
 
     private static bool IsTranxIdAndAmountValid(SSLCommerzValidatorResponse validatorResponse
         , string tranxId
