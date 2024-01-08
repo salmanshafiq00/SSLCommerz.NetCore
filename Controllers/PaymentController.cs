@@ -31,7 +31,8 @@ namespace SSLCommerz.NetCore.Controllers
 
         [EnableCors("SSLCommerzOrigins")]
         [HttpPost]
-        public async Task<ActionResult> CheckoutSuccess([FromForm][ModelBinder(typeof(SnakeCaseModelBinder))] SSLCallbackResponse callBackResponse)
+        public async Task<ActionResult> CheckoutSuccess(
+            [FromForm][ModelBinder(typeof(SnakeCaseModelBinder))] SSLCallbackResponse callBackResponse)
         {
             var allowedOrigins = new HashSet<string>()
             {
@@ -76,7 +77,8 @@ namespace SSLCommerz.NetCore.Controllers
 
         [EnableCors("SSLCommerzOrigins")]
         [HttpPost]
-        public IActionResult CheckoutFail([FromForm][ModelBinder(typeof(SnakeCaseModelBinder))] SSLCallbackResponse callBackResponse)
+        public IActionResult CheckoutFail(
+            [FromForm][ModelBinder(typeof(SnakeCaseModelBinder))] SSLCallbackResponse callBackResponse)
         {
             var jsonData = GetJsonCollection(Request.Form);
 
@@ -90,14 +92,16 @@ namespace SSLCommerz.NetCore.Controllers
 
         [EnableCors("SSLCommerzOrigins")]
         [HttpPost]
-        public IActionResult CheckoutCancel()
+        public IActionResult CheckoutCancel(
+            [FromForm][ModelBinder(typeof(SnakeCaseModelBinder))] SSLCallbackResponse callBackResponse)
         {
+            var jsonString = GetJsonCollection(Request.Form);
             string tranxID = Request.Form["tran_id"].ToString();
 
             return BadRequest("Your payment has been cancel");
 
             // use it for ur web api application to direct to fail page. 
-            //return Redirect($"http://localhost:4200/payment/cancel/{tranxId}"); 
+            //return Redirect($"http://localhost:4200/payment/cancel/{callBackResponse.TranxId}"); 
         }
 
         [EnableCors("SSLCommerzOrigins")]
@@ -117,7 +121,8 @@ namespace SSLCommerz.NetCore.Controllers
         [HttpGet]
         public async Task<ActionResult<SSLTransactionQueryResponse>> TransactionDetail(string tranxId)
         {
-            return await _sSLCommerzService.GetTransactionDetail(tranxId, new CancellationToken());
+            return await _sSLCommerzService
+                .GetTransactionDetail(tranxId, new CancellationToken());
         }
 
         private static SSLInitialRequest GetPaymentData(Guid packageId)

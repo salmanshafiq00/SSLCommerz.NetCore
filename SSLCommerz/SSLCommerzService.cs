@@ -26,7 +26,9 @@ public class SSLCommerzService(
     public const string TRANX_ID = "tran_id";
 
 
-    public async Task<string> InitializeTransectionAsync(SSLInitialRequest reqData, CancellationToken cancellationToken)
+    public async Task<string> InitializeTransectionAsync(
+        SSLInitialRequest reqData, 
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -50,8 +52,6 @@ public class SSLCommerzService(
             var client = _httpClientFactory.CreateClient("SSLCommerz");
 
             var response = await client.PostAsync(submitUrl, content, cancellationToken);
-
-            //response.EnsureSuccessStatusCode();
 
             if (response.IsSuccessStatusCode)
             {
